@@ -61,3 +61,15 @@ The same works for `libyaml`. No changes to the build scripts are needed.
 - `docker/build-all.sh`: runs inside the container; builds libyaml and DTC
   for each target
 - `dtc/`, `libyaml/`: source submodules
+
+## Releases
+
+Pushing a tag starting with `v` builds everything on GitHub Actions and
+publishes a GitHub release with the archives, `SHA256SUMS` and
+`RELEASE_NOTES.txt` attached. The release description is the content of
+`RELEASE_NOTES.txt`.
+
+```sh
+git tag v1.8.1
+git push origin v1.8.1
+```

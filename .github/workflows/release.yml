@@ -1,0 +1,36 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (with submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      # Submodules are cloned shallow; fetch their full history and tags so
+      # `git describe` reports the real version (e.g. v1.8.1) in the notes.
+      - name: Fetch submodule tags
+        run: git submodule foreach 'git fetch --tags --unshallow || git fetch --tags'
+
+      - name: Build
+        run: ./build.sh
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          gh release create "$TAG" bin/* \
+            --title "$TAG" \
+            --notes-file bin/RELEASE_NOTES.txt
