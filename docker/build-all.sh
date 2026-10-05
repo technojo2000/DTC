@@ -6,6 +6,8 @@ set -eu
 DTC_SRC=${DTC_SRC:-/src/dtc}
 YAML_SRC=${YAML_SRC:-/src/libyaml}
 OUT=${OUT:-/out}
+DTC_VERSION=${DTC_VERSION:-unknown}
+STAGE=${STAGE:-/stage}
 WORK=${WORK:-/work}
 TOOLS="dtc fdtget fdtput fdtdump fdtoverlay"
 
@@ -77,11 +79,27 @@ for entry in $TARGETS; do
 		EXTRA_CFLAGS="-Wno-error" \
 		LDFLAGS="-static -s"
 
-	mkdir -p "$OUT/$name"
+	pkg=dtc-$DTC_VERSION-$name
+	mkdir -p "$STAGE/$pkg"
 	for t in $TOOLS; do
-		cp "$t" "$OUT/$name/$t$ext"
+		cp "$t" "$STAGE/$pkg/$t$ext"
 	done
 done
 
+# Package each target: tar.gz for Linux, zip for Windows. Timestamps are
+# fixed so identical binaries give identical archives.
+mkdir -p "$OUT"
+cd "$STAGE"
+find . -exec touch -h -d @0 {} +
+for pkg in *; do
+	case "$pkg" in
+	*-windows-*)
+		find "$pkg" | LC_ALL=C sort | zip -qX "$OUT/$pkg.zip" -@ ;;
+	*)
+		tar --sort=name --owner=0 --group=0 --numeric-owner --mtime=@0 \
+			-cf - "$pkg" | gzip -9n > "$OUT/$pkg.tar.gz" ;;
+	esac
+done
+
 cd "$OUT"
-find . -type f ! -name SHA256SUMS | sort | xargs sha256sum > SHA256SUMS
+sha256sum -- *.tar.gz *.zip > SHA256SUMS

@@ -78,6 +78,7 @@ cmd_build() {
 	rm -rf "$BIN"
 	docker build -f "$ROOT/docker/Dockerfile" \
 		--build-arg ZIG_VERSION="$ZIG_VERSION" \
+		--build-arg DTC_VERSION="$(git -C "$ROOT/dtc" describe --tags --always --dirty)" \
 		--output "type=local,dest=$BIN" "$ROOT"
 	cp "$notes" "$BIN/RELEASE_NOTES.txt"
 	echo "Binaries written to $BIN"

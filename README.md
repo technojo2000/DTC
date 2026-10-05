@@ -34,9 +34,11 @@ Requires Docker.
 ./build.sh clean    # remove ./bin
 ```
 
-Output lands in `bin/<os>-<arch>/`, along with:
+`bin/` then contains one archive per target, named after the DTC version:
 
-- `SHA256SUMS`: checksums of every binary
+- `dtc-<version>-linux-<arch>.tar.gz`
+- `dtc-<version>-windows-<arch>.zip`
+- `SHA256SUMS`: checksums of the archives
 - `RELEASE_NOTES.txt`: the submodule URLs, versions, commits, and whether
   each checkout was clean or dirty, so a build can be reproduced later
 
