@@ -1,0 +1,6 @@
+[submodule "dtc"]
+	path = dtc
+	url = https://git.kernel.org/pub/scm/utils/dtc/dtc.git
+[submodule "libyaml"]
+	path = libyaml
+	url = https://github.com/yaml/libyaml.git
